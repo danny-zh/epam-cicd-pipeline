@@ -5,21 +5,34 @@ pipeline {
     options {
         skipStagesAfterUnstable()
     }
+    environment { 
+        tag="nodemain:v1"
+        name="nodemain"
+    }
     stages {
         stage('Build') {
             steps {
-                echo "hello fro build"
+                sh 'npm install'
             }
         }
         stage('Test'){
             steps {
-                echo "hello fro build"
+                sh 'npm test'
             }
         }
-        stage('Deploy') {
-            steps {
-                echo "hello fro build"
+        stage('Build') {
+            /*when{
+                expression{
+                    env.BRANCH_NAME = "main"
+                }
+            }*/
+            steps{
+                sh "docker build -t $tag -f Dockerfile ."
             }
+        }
+        stage('deploy')
+        {
+            sh '(docker rm -f $name || true ) && docker run --name $name -dp 3000:3000 $tag'
         }
     }
 }
