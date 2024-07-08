@@ -15,7 +15,7 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Test'){
+        stage('Test') {
             steps {
                 sh 'npm test'
             }
@@ -30,9 +30,10 @@ pipeline {
                 sh "docker build -t $tag -f Dockerfile ."
             }
         }
-        stage('deploy')
-        {
-            sh '(docker rm -f $name || true ) && docker run --name $name -dp 3000:3000 $tag'
+        stage('deploy') {
+            steps{
+                sh '(docker rm -f $name || true ) && docker run --name $name -dp 3000:3000 $tag'
+            }
         }
     }
 }
