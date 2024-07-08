@@ -6,8 +6,8 @@ pipeline {
         skipStagesAfterUnstable()
     }
     environment { 
-        tag="nodemain:v1"
-        name="nodemain"
+        IMAG_TAG="nodemain:v1"
+        CONT_NAME="nodemain"
     }
     stages {
         stage('Build') {
@@ -27,12 +27,12 @@ pipeline {
                 }
             }*/
             steps{
-                sh "docker build -t $tag -f Dockerfile ."
+                sh "docker build -t $IMAG_TAG -f Dockerfile ."
             }
         }
         stage('deploy') {
             steps{
-                sh '(docker rm -f $name || true ) && docker run --name $name -dp 3000:3000 $tag'
+                sh "(docker rm -f $CONT_NAME || true ) && docker run --name $name -dp 3000:3000 $IMAG_TAG"
             }
         }
     }
