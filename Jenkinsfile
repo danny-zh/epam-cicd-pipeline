@@ -20,7 +20,7 @@ pipeline {
                 sh 'npm test'
             }
         }
-        stage('Build') {
+        stage('Build2') {
             /*when{
                 expression{
                     env.BRANCH_NAME = "main"
