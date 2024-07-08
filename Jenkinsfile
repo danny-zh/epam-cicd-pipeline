@@ -7,7 +7,9 @@ pipeline {
     }
     environment { 
         IMAG_TAG="nodemain:v1"
-        CONT_NAME="nodemain"
+        MAIN_NAME="nodemain"
+        DEV_NAME="nodedev"
+
     }
     stages {
         stage('Build') {
@@ -20,7 +22,7 @@ pipeline {
                 sh 'npm test'
             }
         }
-        stage('Build2') {
+        stage('Build-image') {
             /*when{
                 expression{
                     env.BRANCH_NAME = "main"
@@ -30,9 +32,20 @@ pipeline {
                 sh "docker build -t $IMAG_TAG -f Dockerfile ."
             }
         }
-        stage('deploy') {
+        stage('deploy-main') {
+            when{
+                branch 'main'
+            }
             steps{
-                sh "(docker rm -f $CONT_NAME || true ) && docker run --name $name -dp 3000:3000 $IMAG_TAG"
+                sh "(docker rm -f $MAIN_NAME || true ) && docker run --name $MAIN_NAME -dp 3000:3000 $IMAG_TAG"
+            }
+        }
+        stage('deploy-dev') {
+            when{
+                branch 'dev'
+            }
+            steps{
+                sh "(docker rm -f $DEV_NAME || true ) && docker run --name $DEV_NAME -dp 3001:3001 $IMAG_TAG"
             }
         }
     }
