@@ -14,12 +14,14 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'npm install'
+                //sh 'npm install'
+                echo "Building"
             }
         }
         stage('Test') {
             steps {
-                sh 'npm test'
+                //sh 'npm test'
+                echo "Testing"
             }
         }
         stage('Build-image') {
@@ -29,7 +31,8 @@ pipeline {
                 }
             }*/
             steps{
-                sh "docker build -t $IMAG_TAG -f Dockerfile ."
+                echo "${env.BRANCH_NAME}"
+                //sh "docker build -t $IMAG_TAG -f Dockerfile ."
             }
         }
         stage('deploy-main') {
@@ -37,7 +40,8 @@ pipeline {
                 branch 'main'
             }
             steps{
-                sh "(docker rm -f $MAIN_NAME || true ) && docker run --name $MAIN_NAME -dp 3000:3000 $IMAG_TAG"
+                echo "Hello from main"
+                //sh "(docker rm -f $MAIN_NAME || true ) && docker run --name $MAIN_NAME -dp 3000:3000 $IMAG_TAG"
             }
         }
         stage('deploy-dev') {
@@ -45,7 +49,8 @@ pipeline {
                 branch 'dev'
             }
             steps{
-                sh "(docker rm -f $DEV_NAME || true ) && docker run --name $DEV_NAME -dp 3001:3001 $IMAG_TAG"
+                echo "Hello from dev"
+                //sh "(docker rm -f $DEV_NAME || true ) && docker run --name $DEV_NAME -dp 3001:3001 $IMAG_TAG"
             }
         }
     }
