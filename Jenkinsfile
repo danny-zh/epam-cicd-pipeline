@@ -9,12 +9,12 @@ pipeline {
         IMAG_TAG="nodemain:v1"
         MAIN_NAME="nodemain"
         DEV_NAME="nodedev"
-
     }
     stages {
         stage('Build') {
             steps {
-                sh 'npm install'
+                //sh 'npm install'
+                echo "building"
             }
         }
         stage('Test') {
@@ -23,11 +23,11 @@ pipeline {
             }
         }
         stage('Build-image') {
-            /*when{
+            when{
                 expression{
-                    env.BRANCH_NAME = "main"
+                    env.BRANCH_NAME == 'main'
                 }
-            }*/
+            }
             steps{
                 sh "docker build -t $IMAG_TAG -f Dockerfile ."
             }
