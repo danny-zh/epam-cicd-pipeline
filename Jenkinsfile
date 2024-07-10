@@ -27,7 +27,7 @@ pipeline {
                 sh 'npm test'
             }
         }
-        stage('Build') {
+        stage('Docker Build') {
             steps{               
                 script {
                     if (env.BRANCH_NAME == 'main') {
