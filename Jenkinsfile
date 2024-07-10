@@ -19,17 +19,15 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                //sh 'npm install'
-                echo "Building"
+                sh 'npm install'
             }
         }
         stage('Test') {
             steps {
-                //sh 'npm test'
-                echo "Testing"
+                sh 'npm test'
             }
         }
-        stage('Build-image') {
+        stage('Build') {
             steps{               
                 script {
                     if (env.BRANCH_NAME == 'main') {
@@ -42,7 +40,7 @@ pipeline {
                 }
             }
         }
-        stage('deploy-main') {
+        stage('Deploy') {
             steps{
                 script {
                     if (env.BRANCH_NAME == 'main') {
