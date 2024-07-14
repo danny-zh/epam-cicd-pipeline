@@ -65,18 +65,20 @@ pipeline {
         stage('Deploy') {
             steps{
                 script{
-                    if (env.BRANCH == 'main')
+                    if (env.BRANCH_NAME == 'main')
                     {
-                        env.CONT_NAME = "Production"
-                        env.PORT = '3000'
+                        env.IMAGE_TAG = "$MAIN_IMAG_TAG"
+                        env.CONT_NAME = "$MAIN_NAME"
+                        env.PORT = "$MAIN_PORT"
                     }
-                    else if (env.BRANCH == "dev")
+                    else if (env.BRANCH_NAME == "dev")
                     {
-                        env.CONT_NAME = "Development"
-                        env.PORT = '3001'
+                        env.IMAGE_TAG = "$DEV_IMAG_TAG"
+                        env.CONT_NAME = "$DEV_NAME"
+                        env.PORT = "$DEV_PORT"
                     }
                     
-                    def downstreamJobName = "deploy_to_$env.branch"
+                    def downstreamJobName = "deploy_to_$env.BRANCH_NAME"
                     def downstreamBuild = build job: downstreamJobName, wait: true, parameters: [
                         string(name: 'IMAGE_TAG', value: "$IMAGE_TAG"),
                         string(name: 'NAME', value: "$env.CONT_NAME"),
