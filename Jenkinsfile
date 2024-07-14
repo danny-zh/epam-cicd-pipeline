@@ -48,14 +48,17 @@ pipeline {
                 }
             }
         }
-        stage('Docker Push'){
+        stage('Docker Push') {
             steps{
-                if (env.BRANCH_NAME == 'main') {
+                sh 'echo $DOCKER_COMMON_CREDS_PSW | docker login -u $DOCKER_COMMON_CREDS_USR --password-stdin'
+                script{
+                    if (env.BRANCH_NAME == 'main') {
                         echo "Pushing docker image $MAIN_IMAG_TAG"   
                         sh "docker push $MAIN_IMAG_TAG"
-                } else if (env.BRANCH_NAME == 'dev') {
-                    echo "Pushing docker image $DEV_IMAG_TAG"
-                    sh "docker push $DEV_IMAG_TAG" 
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        echo "Pushing docker image $DEV_IMAG_TAG"
+                        sh "docker push $DEV_IMAG_TAG" 
+                    }
                 }
             }
         }
