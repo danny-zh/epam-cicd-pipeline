@@ -7,57 +7,48 @@ pipeline {
     }
     environment { 
 
+        APP_PORT = '3000'
+        BRANCH = "${Branch}"
         DOCKER_COMMON_CREDS = credentials('docker_hub_creds')
-        APP_PORT="3000"
-        
-        MAIN_IMAG_TAG="${DOCKER_COMMON_CREDS_USR}/nodemain:v1.0"
-        MAIN_NAME="nodemain"
-        MAIN_PORT="3000"
-
-        DEV_IMAG_TAG="${DOCKER_COMMON_CREDS_USR}/nodedev:v1.0"
-        DEV_NAME="nodedev"
-        DEV_PORT="3001"
-
+        IMAGE_TAG = "${DOCKER_COMMON_CREDS_USR}/${Image_tag}"
     }
-
-    }
+    
     stages {
+         stage('Checkout') {
+            steps {
+                script {
+                    checkout([
+                        $class: 'GitSCM', 
+                        branches: [[name: '*/$BRANCH']],
+                        userRemoteConfigs: [[url: 'https://github.com/danny-zh/epam-cicd-pipeline.git/']]
+                    ])
+                }
+            }
+        }
         stage('Build') {
             steps {
-                echo "Building from branch $env.BRANCH_NAME"
-                sh 'npm install'
+                echo 'Building'
+                sh 'npm install'               
             }
         }
         stage('Test') {
             steps {
-                echo "Testing from branch $env.BRANCH_NAME"
+                echo 'Testing'
                 sh 'npm test'
             }
         }
         stage('Docker Build') {
             steps{
-                script {
-                    if (env.BRANCH_NAME == 'main') {
-                        echo "Building docker image $MAIN_IMAG_TAG"   
-                        sh "docker build -t $MAIN_IMAG_TAG -f Dockerfile ."
-                    } else if (env.BRANCH_NAME == 'dev') {
-                        echo "Building docker image $DEV_IMAG_TAG"   
-                        sh "docker build -t $DEV_IMAG_TAG -f Dockerfile ."
-                    } else {
-                        error 'Unknown build environment: ${BUILD_ENV}'
-                    }
-                }
+                echo "Building"
+                sh "docker build -t $IMAGE_TAG -f Dockerfile ."
             }
         }
         stage('Docker Push'){
             steps{
-                if (env.BRANCH_NAME == 'main') {
-                        echo "Pushing docker image $MAIN_IMAG_TAG"   
-                        sh "docker push $MAIN_IMAG_TAG"
-                } else if (env.BRANCH_NAME == 'dev') {
-                    echo "Pushing docker image $DEV_IMAG_TAG"
-                    sh "docker push $DEV_IMAG_TAG" 
-                }
+                echo "Pushing"
+                sh 'echo $DOCKER_COMMON_CREDS_PSW | docker login -u $DOCKER_COMMON_CREDS_USR --password-stdin'
+                sh "docker push $IMAGE_TAG"
+            }
         }
         stage('Deploy') {
             steps{
@@ -88,6 +79,5 @@ pipeline {
                 
             }
         }
-        
     }
 }
