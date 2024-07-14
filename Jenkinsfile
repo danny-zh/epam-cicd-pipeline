@@ -57,6 +57,7 @@ pipeline {
                     echo "Pushing docker image $DEV_IMAG_TAG"
                     sh "docker push $DEV_IMAG_TAG" 
                 }
+            }
         }
         stage('Deploy') {
             steps{
