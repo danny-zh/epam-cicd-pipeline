@@ -1,3 +1,5 @@
+@Library("JenkinsTestLib") _
+
 pipeline {
     agent {
         label 'wsl' // Runs on a node with the label 'wsl'
@@ -29,8 +31,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo "Testing from branch $env.BRANCH_NAME"
-                sh 'npm test'
+                TestBuild(branch: "${env.BRANCH_NAME}")
             }
         }
         stage('Docker Build') {
