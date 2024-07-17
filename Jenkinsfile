@@ -34,6 +34,13 @@ pipeline {
                 TestBuild(branch: "${env.BRANCH_NAME}")
             }
         }
+         stage('Scan Dockerfile'){
+            steps{
+                script{
+                    sh 'docker run --rm -i ghcr.io/hadolint/hadolint < Dockerfile'
+                }
+            }
+        }
         stage('Docker Build') {
             steps{
                 script {
@@ -46,6 +53,19 @@ pipeline {
                     } else {
                         error 'Unknown build environment: ${BUILD_ENV}'
                     }
+                }
+            }
+        }
+        stage('Docker Scan')
+        {
+            steps{
+                script{
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "Scanning docker image $MAIN_IMAG_TAG"   
+                        sh "trivy image $MAIN_IMAG_TAG"
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        echo "Scanning docker image $DEV_IMAG_TAG"   
+                        sh "trivy image $DEV_IMAG_TAG"
                 }
             }
         }
@@ -79,19 +99,8 @@ pipeline {
                         env.PORT = "$DEV_PORT"
                     }
                     
-                    def downstreamJobName = "deploy_to_$env.BRANCH_NAME"
-                    def downstreamBuild = build job: downstreamJobName, wait: true, parameters: [
-                        string(name: 'IMAGE_TAG', value: "$IMAGE_TAG"),
-                        string(name: 'NAME', value: "$env.CONT_NAME"),
-                        string(name: 'PORT', value: "$env.PORT"),
-                        string(name: 'APP_PORT', value: "$APP_PORT")
-                    ]
-                    
-                    echo "Downstream build result: ${downstreamBuild.result}"
-                    
-                    //sh "(docker rm -f $env.CONT_NAME || true ) && docker run --name $env.CONT_NAME -dp $PORT:$APP_PORT $IMAGE_TAG"
+                    DeployToMain(BRANCH:"${env.BRANCH_NAME}", IMAGE_TAG:"${env.IMAGE_TAG}", CONT_NAME:"${env.CONT_NAME}", PORT: "${env.PORT}", APP_PORT: "${env.APP_PORT}")
                 }
-                
             }
         }
         
