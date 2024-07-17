@@ -27,13 +27,7 @@ pipeline {
                 }
             }
         }
-        stage('Scan Dockerfile'){
-            steps{
-                script{
-                    sh 'docker run --rm -i ghcr.io/hadolint/hadolint < Dockerfile'
-                }
-            }
-        }
+        
         stage('Build') {
             steps {
                 echo 'Building'
@@ -44,6 +38,13 @@ pipeline {
             steps {
                 echo 'Testing'
                 sh 'npm test'
+            }
+        }
+        stage('Scan Dockerfile'){
+            steps{
+                script{
+                    sh 'docker run --rm -i ghcr.io/hadolint/hadolint < Dockerfile'
+                }
             }
         }
         stage('Docker Build') {
