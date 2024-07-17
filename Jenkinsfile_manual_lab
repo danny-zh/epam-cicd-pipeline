@@ -45,6 +45,14 @@ pipeline {
                 sh "docker build -t $IMAGE_TAG -f Dockerfile ."
             }
         }
+        stage('Docker Scan')
+        {
+            steps{
+                script{
+                    'trivy image "$IMAGE_TAG"
+                }
+            }
+        }
         stage('Docker Push'){
             steps{
                 echo "Pushing"
