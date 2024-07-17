@@ -27,7 +27,7 @@ pipeline {
                 }
             }
         }
-        stage('Scan Dockerfile){
+        stage('Scan Dockerfile'){
             steps{
                 script{
                     sh 'docker run --rm -i ghcr.io/hadolint/hadolint < Dockerfile'
