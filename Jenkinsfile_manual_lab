@@ -49,7 +49,7 @@ pipeline {
         {
             steps{
                 script{
-                    'trivy image "$IMAGE_TAG"
+                    sh "trivy image $IMAGE_TAG"
                 }
             }
         }
