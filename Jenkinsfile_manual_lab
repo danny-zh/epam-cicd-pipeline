@@ -1,3 +1,5 @@
+@Library("JenkinsTestLib") _
+
 pipeline {
     agent {
         label 'wsl' // Runs on a node with the label 'wsl'
