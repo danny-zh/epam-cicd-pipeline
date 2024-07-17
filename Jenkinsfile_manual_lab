@@ -64,17 +64,8 @@ pipeline {
                         env.PORT = '3001'
                     }
                     
-                    def downstreamJobName = "deploy_to_$env.branch"
-                    def downstreamBuild = build job: downstreamJobName, wait: true, parameters: [
-                        string(name: 'IMAGE_TAG', value: "$IMAGE_TAG"),
-                        string(name: 'NAME', value: "$env.CONT_NAME"),
-                        string(name: 'PORT', value: "$env.PORT"),
-                        string(name: 'APP_PORT', value: "$APP_PORT")
-                    ]
+                    DeployToMain(BRANCH:"${env.BRANCH}", IMAGE_TAG:"${env.IMAGE_TAG}", CONT_NAME:"${env.CONT_NAME}", PORT: "${env.PORT}", APP_PORT: "${env.APP_PORT}")
                     
-                    echo "Downstream build result: ${downstreamBuild.result}"
-                    
-                    //sh "(docker rm -f $env.CONT_NAME || true ) && docker run --name $env.CONT_NAME -dp $PORT:$APP_PORT $IMAGE_TAG"
                 }
                 
             }
