@@ -34,7 +34,7 @@ pipeline {
                 TestBuild(branch: "${env.BRANCH_NAME}")
             }
         }
-         stage('Scan Dockerfile'){
+        stage('Scan Dockerfile'){
             steps{
                 script{
                     sh 'docker run --rm -i ghcr.io/hadolint/hadolint < Dockerfile'
@@ -56,8 +56,7 @@ pipeline {
                 }
             }
         }
-        stage('Docker Scan')
-        {
+        stage('Docker Scan'){
             steps{
                 script{
                     if (env.BRANCH_NAME == 'main') {
@@ -66,6 +65,7 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'dev') {
                         echo "Scanning docker image $DEV_IMAG_TAG"   
                         sh "trivy image $DEV_IMAG_TAG"
+                    }
                 }
             }
         }
